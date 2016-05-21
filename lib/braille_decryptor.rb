@@ -1,11 +1,8 @@
 require 'pry'
 class BrailleDecryptor
+  attr_reader :decipher
   def initialize
-
-  end
-
-  def decrypt(braille)
-    decryption = {
+    @decipher = {
                   ["0.","..",".."] => "a",
                   ["0.","0.",".."] => "b",
                   ["00","..",".."] => "c",
@@ -40,16 +37,15 @@ class BrailleDecryptor
                   ["..","0.","00"] => "?",
                   ["..","..",".0"] => "CAPS"
                   }
+    end
 
-      if braille.length < 12
-        decryption[braille.chars.each_slice(2).map(&:join)]
+    def decrypt(parsed_braille)
+      if parsed_braille.join.length < 12
+        @decipher[parsed_braille]
       else
-        letter_break = braille.chars.each_slice(6).map(&:join)
-        match_key = letter_break.map do |letter|
-          letter.chars.each_slice(2).map(&:join)
-        end
-        match_key.map {|letter| decryption[letter]}.join
+      parsed_braille.map{|letter| @decipher[letter]}.join
       end
     end
-    # binding.pry
+
+
   end

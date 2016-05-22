@@ -2,10 +2,9 @@ require_relative "braille_parser"
 require 'pry'
 
 class ContentParser
-  attr_reader :contents, :parsed_content, :sorted_braille
+  attr_reader :contents, :parsed_content, :decrypted_braille
   def initialize(contents)
     @contents = contents
-    @sorted_braille = Array.new
   end
 
   def parse_file
@@ -16,11 +15,12 @@ class ContentParser
   end
 
   def format_content
-    until @parsed_content.all?{|elts|elts.empty?}
-    @sorted_braille.push(@parsed_content.map {|line| line[0+0+0]})
+    sorted_braille = Array.new
+    decryptor = BrailleDecryptor.new
+    until @parsed_content.all?{|nests|nests.empty?}
+    sorted_braille.push(@parsed_content.map {|line| line[0+0+0]})
     @parsed_content.each {|letter| letter.shift}
     end
+    @decrypted_braille = sorted_braille.map{|code|decryptor.decipher[code]}.join
   end
-
-
 end

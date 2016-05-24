@@ -1,6 +1,4 @@
-require_relative 'encryptor'
 require 'pry'
-
 class EncryptionFormatter
   attr_reader :final_encryption
   def initialize(encrypted_text)

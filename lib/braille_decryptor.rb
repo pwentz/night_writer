@@ -1,6 +1,6 @@
 require 'pry'
 class BrailleDecryptor
-  attr_reader :decipher, :decrypted_braille
+  attr_reader :decipher, :decrypted_braille, :decipher_integers
   def initialize
     @decipher = {
                   ["0.","..",".."] => "a",
@@ -35,8 +35,21 @@ class BrailleDecryptor
                   ["..","..","00"] => "-",
                   ["..","00",".0"] => ".",
                   ["..","0.","00"] => "?",
-                  ["..","..",".0"] => "^"
+                  ["..","..",".0"] => "^",
+                  [".0",".0","00"] => "#"
                   }
+
+    @decipher_integers = {[".0","00",".."] => "0",
+                          ["0.","..",".."] => "1",
+                          ["0.","0.",".."] => "2",
+                          ["00","..",".."] => "3",
+                          ["00",".0",".."] => "4",
+                          ["0.",".0",".."] => "5",
+                          ["00","0.",".."] => "6",
+                          ["00","00",".."] => "7",
+                          ["0.","00",".."] => "8",
+                          [".0","0.",".."] => "9"}
+    @sorted_nums = Array.new
     end
 
 
@@ -44,10 +57,13 @@ class BrailleDecryptor
     def decrypt(raw_braille)
       formatter = DecryptionFormatter.new
       formatter.parse_braille(raw_braille)
-      formatter.format_content
-      @decrypted_braille = formatter.sorted_braille.map{|code|@decipher[code]}
-      if @decrypted_braille.any?{|letters|letters=="^"}
+      @sorted_braille = formatter.format_content
+      if @sorted_braille.any?{|letter|@decipher[letter]=="#"}
+        self.num_fit
+      elsif @decrypted_braille.any?{|letters|letters=="^"}
         self.cap_fit
+      else
+        @decrypted_braille = @sorted_braille.map{|code|@decipher[code]}
       end
     end
 
@@ -58,6 +74,29 @@ class BrailleDecryptor
         @decrypted_braille = @decrypted_braille.join.split("^").map{|code|code.capitalize}
         @decrypted_braille[0].downcase!
         @decrypted_braille = @decrypted_braille.join
+      end
+    end
+
+    def num_fit
+        until @decipher[@sorted_braille.first]=="#"
+          @sorted_nums.push(@decipher[@sorted_braille.shift])
+          if @sorted_braille.empty?
+            break
+          end
+        end
+        @sorted_braille.shift
+        self.num_translate
+    end
+
+    def num_translate
+      if @sorted_braille.any?{|letter|@decipher[letter]=="#"}
+        until @decipher[@sorted_braille.first]=="#"
+          @sorted_nums.push(@decipher_integers[@sorted_braille.shift])
+        end
+        @sorted_braille.shift
+        self.num_fit
+      else
+        @decrypted_braille = @sorted_nums.join
       end
     end
   end

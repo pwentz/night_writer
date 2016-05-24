@@ -1,7 +1,6 @@
-require_relative 'content_parser'
-require_relative "braille_parser"
-require_relative "braille_decryptor"
+require_relative "decryption_formatter"
 require_relative "encryption_formatter"
+require_relative "encryptor"
 
 require 'pry'
 class NightWriter
@@ -9,15 +8,12 @@ class NightWriter
   def initialize
     @decrypted_braille
   end
+
   def decrypt
-    contents = File.read(ARGV[0])
-
-    content_parser = ContentParser.new(contents)
+    raw_braille = File.read(ARGV[0])
     decryptor = BrailleDecryptor.new
-
-    content_parser.parse_file
-    content_parser.format_content
-    File.write(ARGV[1], content_parser.decrypted_braille)
+    decryptor.decrypt(raw_braille)
+    File.write(ARGV[1], decryptor.decrypted_braille)
   end
 
   def encrypt

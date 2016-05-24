@@ -1,6 +1,6 @@
 require 'pry'
 class BrailleDecryptor
-  attr_reader :decipher
+  attr_reader :decipher, :decrypted_braille
   def initialize
     @decipher = {
                   ["0.","..",".."] => "a",
@@ -35,17 +35,29 @@ class BrailleDecryptor
                   ["..","..","00"] => "-",
                   ["..","00",".0"] => ".",
                   ["..","0.","00"] => "?",
-                  ["..","..",".0"] => "CAPS"
+                  ["..","..",".0"] => "^"
                   }
     end
 
-    def decrypt(parsed_braille)
-      if parsed_braille.join.length < 12
-        @decipher[parsed_braille]
-      else
-      parsed_braille.map{|letter| @decipher[letter]}.join
+
+
+    def decrypt(raw_braille)
+      formatter = DecryptionFormatter.new
+      formatter.parse_braille(raw_braille)
+      formatter.format_content
+      @decrypted_braille = formatter.sorted_braille.map{|code|@decipher[code]}
+      if @decrypted_braille.any?{|letters|letters=="^"}
+        self.cap_fit
       end
     end
 
-
+    def cap_fit
+      if @decrypted_braille.first == ("^")
+        @decrypted_braille = @decrypted_braille.join.split("^").map{|code|code.capitalize}.join
+      else
+        @decrypted_braille = @decrypted_braille.join.split("^").map{|code|code.capitalize}
+        @decrypted_braille[0].downcase!
+        @decrypted_braille = @decrypted_braille.join
+      end
+    end
   end

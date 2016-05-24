@@ -14,7 +14,5 @@ class BrailleParser
         letter.chars.each_slice(2).map(&:join)
       end
     end
-    # @parsed_braille = letter_break.map{|letter| decryption[letter]}.join
-    # binding.pry
   end
 end

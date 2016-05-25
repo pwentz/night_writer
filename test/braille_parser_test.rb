@@ -21,10 +21,13 @@ class BrailleParserTest < Minitest::Test
     assert_equal 2, parsed_braille[1].length
   end
 
-  def test_parser_turns_multiple_braille_into_nested_arrays
+  def test_parser_turns_two_braille_characters_into_nested_arrays
+
     parser1 = BrailleParser.new
     pair_of_braille = "00..00..00.."
+
     parsed_braille = parser1.parse(pair_of_braille)
+
     assert_equal 12, pair_of_braille.length
     assert_instance_of Array, parsed_braille.first
     assert_equal 2, parsed_braille.count
@@ -32,11 +35,16 @@ class BrailleParserTest < Minitest::Test
     assert parsed_braille.first.all?{|code|code.length==2}
     assert parsed_braille[1].all?{|code|code.length==2}
 
+  end
+
+  def test_parser_can_nest_three_multiple
+
+    parser1 = BrailleParser.new
     three_braille_letters = "00..00..00..000000"
-    parsed_braille2 = parser1.parse(three_braille_letters)
+    parsed_braille = parser1.parse(three_braille_letters)
     assert_equal 18, three_braille_letters.length
-    assert_equal 3, parsed_braille2.count
-    assert parsed_braille2.all?{|letter|letter.length==3}
+    assert_equal 3, parsed_braille.count
+    assert parsed_braille.all?{|letter|letter.length==3}
     assert parsed_braille.first.all?{|code|code.length==2}
     assert parsed_braille[1].all?{|code|code.length==2}
   end

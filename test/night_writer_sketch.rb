@@ -58,11 +58,18 @@ File.write(ARGV[1], contents)
               #                                                                                           ^^^^^^^^^^^^^
               #                                                                                    .find_all_by_index method?!
 
-
-
-
-#Step 6: Find a way to spot capitals or numbers and build their exception.
-
-#Step 7: Reverse engineer an encryption!
+#Step 6: Reverse engineer an encryption!
+  # => write a cipher hash vs using decipher.key
+       # => multiple_letters = "0.0.\n..0.\n....\n"
+    # => cipher hash could use multiple_letters format above as key
+    # => decipher.key would require more data formatting to take content
+    # => from ["0.","..","00"] => "0.\n..\n00\n"
+                    #^^^^^^^^^^^
+                    #example_key = braille_decryptor.decipher.key("a")
+                    #example_key.map{|elt|elt+"\n"}.join
+          # => for multiple letters, you would have to figure out how many letters
+          # => are in the braille and divide by new lines
+          
+#Step 7: Find a way to spot capitals or numbers and build their exception.
 
 #Step 8: Find a way to echo number of characters and filename of file that is just created.

@@ -1,33 +1,40 @@
- require_relative 'braille_decryptor'
+require_relative 'braille_decryptor'
+require_relative 'num_encryptor'
 require 'pry'
 
 class Encryptor
-  attr_accessor :encrypted_text
-  def initialize(plain_text)
-    @plain_text = plain_text
-    @sorted_text
+  attr_accessor :encrypted_text, :sorted_text
+  def initialize
+    encryptor = BrailleDecryptor.new
+  end
+  def parse(plain_text)
+    @sorted_text = plain_text.chomp
   end
 
-  def parse
-    @sorted_text = @plain_text.chomp
-    if @sorted_text.chars.any?{|chars|chars==chars.upcase}
-      self.cap_fit
+  def setup_to_translate
+    if @sorted_text.chars.any?{|char|char.upcase==char.downcase}
+      num_encryptor = NumEncryptor.new
+      num_encryptor.adjust(@sorted_text)
+      @encrypted_text = num_encryptor.num_setup
+    elsif text.chars.any?{|char|char==char.upcase}
+      translate(cap_fit(@sorted_text))
     else
-      self.interpret
+      translate(@sorted_text)
     end
   end
 
-  def cap_fit
-    cap_sort = @sorted_text.chars.find_all{|letter|letter==letter.upcase}
+  def cap_fit(text)
+    cap_sort = text.chars.find_all do |letter|
+      letter==letter.upcase && letter!=letter.downcase
+    end
+    @sorted_text = text
     until cap_sort.count==0
       @sorted_text = @sorted_text.sub(cap_sort.first,"^"+"#{cap_sort.shift.downcase}")
     end
-    self.interpret
   end
 
-  def interpret
-    encryptor = BrailleDecryptor.new
-    # binding.pry
+
+  def translate(adjusted_text)
     @sorted_text = @sorted_text.chars.map do |letter|
       encryptor.decipher.key(letter).join
     end

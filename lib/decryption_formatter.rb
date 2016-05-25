@@ -21,6 +21,4 @@ class DecryptionFormatter
     end
     @sorted_braille
   end
-
-
 end

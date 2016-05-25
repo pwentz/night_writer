@@ -1,10 +1,6 @@
 require 'pry'
 class BrailleParser
   attr_reader :parsed_braille
-  def initialize
-    @parsed_braille
-  end
-
   def parse(braille)
     if braille.length < 12
       @parsed_braille = braille.chars.each_slice(2).map(&:join)

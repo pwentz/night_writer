@@ -18,8 +18,8 @@ class NightWriter
 
   def encrypt
     plain_text = File.read(ARGV[0])
-    encryptor = Encryptor.new(plain_text)
-    encryptor.parse
+    encryptor = Encryptor.new
+    encryptor.parse(plain_text)
     formatter = EncryptionFormatter.new(encryptor.encrypted_text)
     formatter.format
     File.write(ARGV[1],formatter.final_encryption)

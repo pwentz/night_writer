@@ -8,8 +8,9 @@ class DecryptionFormatterTest < Minitest::Test
 
 
   def test_formatter_can_evenly_divide_parsed_lines
-    formatter = DecryptionFormatter.new
-    formatter.parse_braille(".0.00000\n000..0..\n....0.00\n")
+    
+    formatter = DecryptionFormatter.new(".0.00000\n000..0..\n....0.00\n")
+    formatter.parse_lines
 
 
     assert_equal 24, formatter.parsed_content.join.length
@@ -19,7 +20,7 @@ class DecryptionFormatterTest < Minitest::Test
   end
 
   def test_formatter_can_concat_corresponding_braille_contents
-
+    
     formatter = DecryptionFormatter.new
     formatter.parse_braille(".0.00000\n000..0..\n....0.00\n")
 

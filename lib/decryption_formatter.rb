@@ -2,23 +2,49 @@ require_relative "braille_parser"
 require 'pry'
 
 class DecryptionFormatter
-  attr_reader :raw_braille, :parsed_content, :sorted_braille
-  def initialize
-    @sorted_braille = Array.new
+  attr_reader :formatted_braille
+  def initialize(raw_braille)
+    @raw_braille = raw_braille
+    @braille_parser = BrailleParser.new
   end
 
-  def parse_braille(raw_braille)
-    braille_parser = BrailleParser.new
-    parsed_lines = raw_braille.split("\n")
-    parsed_letters = parsed_lines.map{|line| braille_parser.parse(line)}
-    @parsed_content = parsed_letters.map{|nest| nest.flatten}
+  def parse_lines
+    if @raw_braille.chars.find_all{|char|char=="\n"}.count > 3
+      # unwrap_text
+    else
+      # if @raw_braille.class==string
+        @formatted_braille = @raw_braille.split("\n")
+      # else
+      #   unwrap_text
+      # end
+    end
+    parse_letters
+  end
+
+  def unwrap_text
+    @formatted_braille = @raw_braille.map{|line|line.pop}
+    binding.pry
+  end
+
+  def parse_letters
+    @formatted_braille = @formatted_braille.map{|line| @braille_parser.parse(line)}
+    parse_content
+  end
+
+  def parse_content
+    @formatted_braille = @formatted_braille.map{|nest| nest.flatten}
+    format_content
   end
 
   def format_content
-    until @parsed_content.all?{|nests|nests.empty?}
-    @sorted_braille.push(@parsed_content.map {|line| line[0+0+0]})
-    @parsed_content.each {|letter| letter.shift}
-    end
-    @sorted_braille
+    @formatted_braille = @formatted_braille.transpose.map {|nest| nest.reduce(:+)}
+    final_assembly
   end
+
+  def final_assembly
+    @formatted_braille = @formatted_braille.reduce([]) do |adj_braille,code|
+      adj_braille << code.chars.each_slice(2).map(&:join)
+    end
+  end
+
 end
